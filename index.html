@@ -16,6 +16,7 @@
     input, button {
       padding: 8px;
       margin: 5px 0;
+      width: 250px;
     }
     .result {
       margin-top: 20px;
@@ -29,8 +30,8 @@
 
 <h2>Date Calculator</h2>
 
-<label for="base-date">Base Date (YYYY-MM-DD HH:MM:SS)</label>
-<input type="datetime-local" id="base-date">
+<label for="base-date">Base Date (YYYY-MM-DD hh:mm:ss AM/PM)</label>
+<input type="text" id="base-date" placeholder="2022-12-31 11:59:59 PM">
 
 <label for="years">Years</label>
 <input type="number" id="years" value="0">
@@ -56,6 +57,26 @@
 <div class="result" id="result"></div>
 
 <script>
+  function parseDate(dateString) {
+    const parts = dateString.split(' ');
+    if (parts.length !== 2) return null;
+
+    const datePart = parts[0].split('-');
+    const timePart = parts[1].split(':');
+
+    if (datePart.length !== 3 || timePart.length !== 3) return null;
+
+    let [year, month, day] = datePart.map(Number);
+    let [hour, minute, second] = timePart.map(Number);
+    const ampm = parts[1].includes('AM') ? 'AM' : 'PM';
+
+    // Convert to 24-hour format
+    if (ampm === 'PM' && hour < 12) hour += 12;
+    if (ampm === 'AM' && hour === 12) hour = 0;
+
+    return new Date(year, month - 1, day, hour, minute, second);
+  }
+
   function formatAMPM(date) {
     let hours = date.getHours();
     let minutes = date.getMinutes();
@@ -71,11 +92,11 @@
   function calculateDate() {
     // Get base date
     const baseDateValue = document.getElementById('base-date').value;
-    if (!baseDateValue) {
-      alert("Please enter a base date.");
+    const baseDate = parseDate(baseDateValue);
+    if (!baseDate) {
+      alert("Please enter a valid base date in the format YYYY-MM-DD hh:mm:ss AM/PM.");
       return;
     }
-    const baseDate = new Date(baseDateValue);
 
     // Get input values for time difference
     const years = parseInt(document.getElementById('years').value) || 0;
