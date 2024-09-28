@@ -56,6 +56,18 @@
 <div class="result" id="result"></div>
 
 <script>
+  function formatAMPM(date) {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    let seconds = date.getSeconds();
+    let ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // The hour '0' should be '12'
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+    return hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+  }
+
   function calculateDate() {
     // Get base date
     const baseDateValue = document.getElementById('base-date').value;
@@ -82,7 +94,10 @@
     baseDate.setSeconds(baseDate.getSeconds() + seconds);
 
     // Display the result
-    document.getElementById('result').textContent = `Resulting Date: ${baseDate.toLocaleString()}`;
+    const formattedDate = baseDate.toLocaleDateString();
+    const formattedTime = formatAMPM(baseDate);
+
+    document.getElementById('result').textContent = `Resulting Date: ${formattedDate} ${formattedTime}`;
   }
 </script>
 
